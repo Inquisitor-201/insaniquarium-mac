@@ -813,10 +813,16 @@ void Board::Update()
 		int aVal = Unk01();
 		int aLastMouseX = mWidgetManager->mLastMouseX;
 		int aLastMouseY = mWidgetManager->mLastMouseY;
+		// Original mechanic: dropping food is free while Gus is in the tank
+		// (ref: Insaniquarium wiki, Gus page). The single-click Gus path never
+		// charged; the hold-to-feed path was missing this.
+		bool aGusInTank = false;
+		for (size_t gi = 0; gi < mAlienList->size(); gi++)
+			if (mAlienList->at(gi)->mAlienType == ALIEN_GUS) { aGusInTank = true; break; }
 		if (!isLeftBtnDown)
 			m0x4ec = false;
 		else if ((mGameUpdateCnt % (16 - gFoodLimit) == 0) && (m0x3c0 + 200 < aVal) && 
-			(aLastMouseX >= 31 && aLastMouseX <= 586) && (aLastMouseY >= 61 && aLastMouseY <= 399) && Buy(m0x4ac, false))
+			(aLastMouseX >= 31 && aLastMouseX <= 586) && (aLastMouseY >= 61 && aLastMouseY <= 399) && (aGusInTank || Buy(m0x4ac, false)))
 		{ // 301
 			DropFood(aLastMouseX - 10, aLastMouseY - 10, 0, false, 20, -1);
 		}
